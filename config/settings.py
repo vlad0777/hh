@@ -1,0 +1,2 @@
+CLICKHOUSE_HOST = "localhost"
+AUTH_TOKEN = ""

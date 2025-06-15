@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend
+    container_name: hh-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./notebook:/app/notebook
+    environment:
+      - CLICKHOUSE_HOST=clickhouse
+    depends_on:
+      - clickhouse
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../Dockerfile.frontend
+    container_name: hh-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  jupyter:
+    image: jupyter/base-notebook
+    container_name: hh-jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebook:/home/jovyan/work
+    command: start-notebook.sh --NotebookApp.token=''
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    container_name: hh-clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./clickhouse_data:/var/lib/clickhouse
